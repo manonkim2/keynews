@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type { NewsItem } from "@/lib/rss";
+import type { NewsItem } from "@/types/news";
 
 interface NewsCardProps {
   news: NewsItem;

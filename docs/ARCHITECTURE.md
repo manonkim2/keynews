@@ -90,3 +90,31 @@ Next.js Route Handler로 외부 API 호출 책임을 분리한다.
 - features/ 하위 도메인을 추가하여 기능 확장 가능
 - API는 도메인 단위로 분리하여 스케일링하기 용이
 - Client Component는 Server Component에 영향을 주지 않음
+
+## 7. API Route 사용 원칙
+
+### 7.1 외부 API는 반드시 app/api/ 경유
+
+RSS, 네이버 뉴스 검색 API, OpenAI 요약 등 외부 API는  
+Client Component 또는 page.tsx에서 직접 호출하지 않는다.
+
+다음과 같은 이유로 반드시 API Route를 경유한다:
+
+- 서버 캐싱(Cache-Control, ISR)을 적용할 수 있음
+- CORS 및 보안 문제 방지
+- 응답 포맷이 변경되어도 클라이언트 영향 최소화
+- SSR 성능 최적화 (빠른 TTFB)
+
+### 7.2 lib/는 순수 로직만 보관
+
+RSS 파싱, 데이터 변환 등 재사용 가능한 순수 로직은 lib/에 두고  
+외부 네트워크 호출은 api route에서만 수행한다.
+
+### 7.3 page.tsx는 API Route만 fetch한다
+
+page.tsx는 다음 역할만 가진다:
+
+- API Route fetch (server-side)
+- 가공된 데이터를 features/ 클라이언트 컴포넌트로 전달
+
+직접 RSS를 parseURL로 호출하지 않는다.

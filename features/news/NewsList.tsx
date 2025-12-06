@@ -1,6 +1,6 @@
 "use client";
 
-import type { NewsItem } from "@/lib/rss";
+import type { NewsItem } from "@/types/news";
 import { NewsCard } from "./NewsCard";
 
 interface NewsListProps {

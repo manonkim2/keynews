@@ -1,14 +1,18 @@
-import { getTop10News } from "@/lib/rss";
+import type { NewsItem } from "@/types/news";
 import { NewsList } from "@/features/news/NewsList";
 
 /**
  * AIDEV-NOTE: 메인 페이지 - Server Component
- * - RSS fetch는 Server Component에서만 수행 (ARCHITECTURE.md 규칙)
+ * - ARCHITECTURE.md 7.3: page.tsx는 API Route만 fetch
  * - DB 저장 없이 즉시 렌더링
  */
 export default async function Home() {
-  // AIDEV-NOTE: 매일경제 RSS에서 메인 TOP 10 뉴스 가져오기
-  const newsList = await getTop10News();
+  // AIDEV-NOTE: /api/top에서 매일경제 RSS 메인 TOP 10 뉴스 가져오기
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/top`, {
+    cache: "no-store", // SSR 시 매번 최신 데이터 fetch
+  });
+
+  const newsList: NewsItem[] = res.ok ? await res.json() : [];
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
