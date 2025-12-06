@@ -1,12 +1,12 @@
 # Pulse News — 기능 체크리스트 (최신 업데이트)
 
-## 1. 메인: 최근 1시간 TOP 10 뉴스
+## 1. 메인: TOP 10 뉴스
 
-[ ] 매일경제 RSS에서 최신 기사 가져오기  
-[ ] rss-parser로 RSS 데이터를 JS 객체로 가공하기  
-[ ] 정렬 후 상위 10개만 반환하기  
-[ ] DB 사용 금지  
-[ ] 해당 fetch는 Server Component에서만 수행
+[x] 매일경제 RSS에서 최신 기사 가져오기
+[x] rss-parser로 RSS 데이터를 JS 객체로 가공하기
+[x] 정렬 후 상위 10개만 반환하기
+[x] DB 사용 금지
+[x] 해당 fetch는 Server Component에서만 수행
 
 ---
 

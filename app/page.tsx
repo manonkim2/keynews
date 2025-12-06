@@ -1,48 +1,32 @@
-import { createClient } from "@/lib/supabase/server";
-import { keywordArraySchema } from "@/lib/schemas/keyword.schema";
+import type { NewsItem } from "@/types/news";
+import { NewsList } from "@/features/news/NewsList";
 
+/**
+ * AIDEV-NOTE: 메인 페이지 - Server Component
+ * - ARCHITECTURE.md 7.3: page.tsx는 API Route만 fetch
+ * - DB 저장 없이 즉시 렌더링
+ */
 export default async function Home() {
-  const supabase = await createClient();
+  // AIDEV-NOTE: /api/top에서 매일경제 RSS 메인 TOP 10 뉴스 가져오기
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/top`, {
+    cache: "no-store", // SSR 시 매번 최신 데이터 fetch
+  });
 
-  // AIDEV-NOTE: Supabase keyword 테이블 연결 테스트
-  const { data, error } = await supabase.from("keyword").select("*");
-
-  if (error) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-red-500">
-          <h2 className="text-xl font-bold">에러 발생</h2>
-          <p>{error.message}</p>
-        </div>
-      </div>
-    );
-  }
-
-  // zod 스키마로 외부 데이터 검증 (CLAUDE.md 규칙)
-  const keywords = keywordArraySchema.parse(data);
+  const newsList: NewsItem[] = res.ok ? await res.json() : [];
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-8">
-      <h1 className="mb-8 text-3xl font-bold">Supabase 연결 테스트</h1>
-      <div className="w-full max-w-md space-y-4">
-        <h2 className="text-xl font-semibold">Keywords:</h2>
-        {keywords.length === 0 ? (
-          <p className="text-gray-500">키워드가 없습니다.</p>
-        ) : (
-          <ul className="space-y-2">
-            {keywords.map((keyword) => (
-              <li
-                key={keyword.id}
-                className="rounded-lg border border-gray-200 p-4"
-              >
-                <p className="font-medium">{keyword.name}</p>
-                <p className="text-sm text-gray-500">
-                  {new Date(keyword.created_at).toLocaleString("ko-KR")}
-                </p>
-              </li>
-            ))}
-          </ul>
-        )}
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="container mx-auto px-4">
+        {/* Header */}
+        <header className="mb-12 text-center">
+          <h1 className="mb-2 text-4xl font-bold text-gray-900">Key News</h1>
+          <p className="text-gray-600">TOP 10 뉴스</p>
+        </header>
+
+        {/* News List */}
+        <main className="mx-auto max-w-6xl">
+          <NewsList newsList={newsList} />
+        </main>
       </div>
     </div>
   );
