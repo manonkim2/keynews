@@ -22,16 +22,20 @@ export default async function Home() {
   const newsList: NewsItem[] = newsRes.ok ? await newsRes.json() : [];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <header className="mb-12 text-center">
-          <h1 className="mb-2 text-4xl font-bold text-gray-900">Key News</h1>
-          <p className="text-gray-600">TOP 10 뉴스 & 키워드 검색</p>
+    <div className="min-h-screen bg-white">
+      <div className="mx-auto max-w-5xl px-6 py-20">
+        {/* Header - Clean & Bright style */}
+        <header className="mb-20">
+          <h1 className="mb-3 text-[32px] font-semibold tracking-tight text-editorial-black">
+            Key News
+          </h1>
+          <p className="text-[15px] text-editorial-gray">
+            Your daily news digest
+          </p>
         </header>
 
         {/* Tab Navigation */}
-        <main className="mx-auto max-w-6xl">
+        <main>
           <TabNavigation topNewsList={newsList} keywords={keywords} />
         </main>
       </div>

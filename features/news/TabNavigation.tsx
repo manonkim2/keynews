@@ -24,29 +24,29 @@ export function TabNavigation({ topNewsList, keywords }: TabNavigationProps) {
 
   return (
     <div>
-      {/* 탭 버튼 */}
-      <div className="mb-8 flex justify-center gap-4">
+      {/* 탭 네비게이션 - Clean & Minimal */}
+      <nav className="mb-12 flex gap-6 border-b border-editorial-divider">
         <button
           onClick={() => setActiveTab("top10")}
-          className={`rounded-lg px-6 py-3 font-semibold transition-colors ${
+          className={`pb-3 text-[14px] font-medium transition-all ${
             activeTab === "top10"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              ? "border-b-2 border-editorial-blue text-editorial-black"
+              : "text-editorial-gray hover:text-editorial-black"
           }`}
         >
-          TOP 10 뉴스
+          Top 10
         </button>
         <button
           onClick={() => setActiveTab("search")}
-          className={`rounded-lg px-6 py-3 font-semibold transition-colors ${
+          className={`pb-3 text-[14px] font-medium transition-all ${
             activeTab === "search"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              ? "border-b-2 border-editorial-blue text-editorial-black"
+              : "text-editorial-gray hover:text-editorial-black"
           }`}
         >
-          키워드 검색
+          Keywords
         </button>
-      </div>
+      </nav>
 
       {/* 탭 콘텐츠 */}
       <div>
