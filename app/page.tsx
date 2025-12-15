@@ -1,31 +1,42 @@
 import type { NewsItem } from "@/types/news";
-import { NewsList } from "@/features/news/NewsList";
+import { TabNavigation } from "@/features/news/TabNavigation";
+import { getKeywordsAction } from "@/app/actions/keywords";
 
 /**
  * AIDEV-NOTE: 메인 페이지 - Server Component
- * - ARCHITECTURE.md 7.3: page.tsx는 API Route만 fetch
- * - DB 저장 없이 즉시 렌더링
+ * - ARCHITECTURE.md 7.3: page.tsx는 데이터 오케스트레이션(병렬 fetch)만 담당
+ * - TabNavigation으로 TOP10 뉴스와 키워드 검색 탭 전환
  */
 export default async function Home() {
-  // AIDEV-NOTE: /api/top에서 매일경제 RSS 메인 TOP 10 뉴스 가져오기
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/top`, {
-    cache: "no-store", // SSR 시 매번 최신 데이터 fetch
-  });
+  // AIDEV-NOTE: 병렬 fetch - TOP 10 뉴스와 키워드 동시 조회
+  const [newsRes, keywords] = await Promise.all([
+    fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/top`,
+      {
+        cache: "no-store",
+      }
+    ),
+    getKeywordsAction(),
+  ]);
 
-  const newsList: NewsItem[] = res.ok ? await res.json() : [];
+  const newsList: NewsItem[] = newsRes.ok ? await newsRes.json() : [];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <header className="mb-12 text-center">
-          <h1 className="mb-2 text-4xl font-bold text-gray-900">Key News</h1>
-          <p className="text-gray-600">TOP 10 뉴스</p>
+    <div className="min-h-screen bg-white">
+      <div className="mx-auto max-w-5xl px-6 py-20">
+        {/* Header - Clean & Bright style */}
+        <header className="mb-20">
+          <h1 className="mb-3 text-[32px] font-semibold tracking-tight text-editorial-black">
+            Key News
+          </h1>
+          <p className="text-[15px] text-editorial-gray">
+            Your daily news digest
+          </p>
         </header>
 
-        {/* News List */}
-        <main className="mx-auto max-w-6xl">
-          <NewsList newsList={newsList} />
+        {/* Tab Navigation */}
+        <main>
+          <TabNavigation topNewsList={newsList} keywords={keywords} />
         </main>
       </div>
     </div>

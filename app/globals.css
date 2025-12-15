@@ -6,8 +6,21 @@
 }
 
 @theme inline {
+  /* Clean & Bright Color System (Apple News, Linear style) */
+  --color-editorial-black: #18181b;      /* Softer black */
+  --color-editorial-gray: #71717a;       /* Medium gray for metadata */
+  --color-editorial-light: #a1a1aa;      /* Light gray for subtle text */
+  --color-editorial-blue: #6366f1;       /* Indigo accent */
+  --color-indigo-600: #4f46e5;           /* Darker indigo for gradient */
+  --color-editorial-divider: #e4e4e7;    /* Subtle border */
+  --color-editorial-bg: #ffffff;         /* Pure white */
+  --color-editorial-hover: #f4f4f5;      /* Subtle hover state */
+
+  /* Legacy colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Typography */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -20,7 +33,10 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-editorial-bg);
+  color: var(--color-editorial-black);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
 }
