@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import type { Keyword } from "@/lib/schemas/keyword.schema";
 import { addKeywordAction, deleteKeywordAction } from "@/app/actions/keywords";
 
@@ -62,14 +63,19 @@ export function KeywordManager({ keywords }: KeywordManagerProps) {
   };
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6">
-      <h2 className="mb-4 text-lg font-semibold text-gray-900">
-        키워드 관리
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="rounded-2xl border border-editorial-divider bg-white p-6"
+    >
+      <h2 className="mb-6 text-[18px] font-semibold text-editorial-black">
+        Manage Keywords
       </h2>
 
       {/* 키워드 추가 입력 */}
-      <div className="mb-4">
-        <div className="flex gap-2">
+      <div className="mb-6">
+        <div className="flex gap-3">
           <input
             type="text"
             value={newKeyword}
@@ -79,44 +85,68 @@ export function KeywordManager({ keywords }: KeywordManagerProps) {
                 handleAddKeyword();
               }
             }}
-            placeholder="새 키워드 입력"
-            className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            placeholder="Add new keyword"
+            className="flex-1 rounded-lg border border-editorial-divider bg-white px-4 py-2.5 text-[15px] text-editorial-black placeholder:text-editorial-light focus:border-editorial-blue focus:outline-none focus:ring-2 focus:ring-editorial-blue/20 disabled:bg-editorial-hover"
             disabled={isPending}
           />
-          <button
+          <motion.button
             onClick={handleAddKeyword}
             disabled={isPending}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:bg-gray-400"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="rounded-lg bg-editorial-blue px-5 py-2.5 text-[14px] font-medium text-white transition-colors hover:bg-indigo-600 disabled:bg-editorial-light disabled:cursor-not-allowed"
           >
-            {isPending ? "처리 중..." : "추가"}
-          </button>
+            {isPending ? "Adding..." : "Add"}
+          </motion.button>
         </div>
-        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+        <AnimatePresence>
+          {error && (
+            <motion.p
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-2 text-[13px] text-red-500"
+            >
+              {error}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* 키워드 목록 */}
       <div className="space-y-2">
         {keywords.length === 0 ? (
-          <p className="text-sm text-gray-500">
-            저장된 키워드가 없습니다.
+          <p className="py-4 text-center font-mono text-[13px] text-editorial-gray">
+            No keywords saved yet
           </p>
         ) : (
-          keywords.map((keyword) => (
-            <div
-              key={keyword.id}
-              className="flex items-center justify-between rounded-md border border-gray-200 bg-gray-50 px-3 py-2"
-            >
-              <span className="text-sm text-gray-900">{keyword.name}</span>
-              <button
-                onClick={() => handleDeleteKeyword(keyword.id)}
-                className="text-sm text-red-600 hover:text-red-800"
+          <AnimatePresence>
+            {keywords.map((keyword, index) => (
+              <motion.div
+                key={keyword.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ delay: index * 0.05 }}
+                whileHover={{ x: 2 }}
+                className="flex items-center justify-between rounded-lg border border-editorial-divider bg-editorial-hover px-4 py-3 transition-colors hover:border-editorial-gray"
               >
-                삭제
-              </button>
-            </div>
-          ))
+                <span className="text-[15px] font-medium text-editorial-black">
+                  {keyword.name}
+                </span>
+                <motion.button
+                  onClick={() => handleDeleteKeyword(keyword.id)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="text-[13px] text-editorial-gray transition-colors hover:text-red-500"
+                >
+                  Delete
+                </motion.button>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

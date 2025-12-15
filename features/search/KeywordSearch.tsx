@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { Keyword } from "@/lib/schemas/keyword.schema";
 import type { NewsItem } from "@/types/news";
 import { NewsCard } from "@/features/news/NewsCard";
@@ -49,67 +50,110 @@ export function KeywordSearch({ keywords }: KeywordSearchProps) {
   return (
     <div className="space-y-6">
       {/* 키워드 선택 버튼 */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">
-          키워드 선택
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="rounded-2xl border border-editorial-divider bg-white p-6"
+      >
+        <h2 className="mb-6 text-[18px] font-semibold text-editorial-black">
+          Select Keyword
         </h2>
         {keywords.length === 0 ? (
-          <p className="text-sm text-gray-500">
-            저장된 키워드가 없습니다. 먼저 키워드를 추가해주세요.
+          <p className="py-4 text-center font-mono text-[13px] text-editorial-gray">
+            No keywords available. Add one above.
           </p>
         ) : (
           <div className="flex flex-wrap gap-2">
-            {keywords.map((keyword) => (
-              <button
+            {keywords.map((keyword, index) => (
+              <motion.button
                 key={keyword.id}
                 onClick={() => handleSearch(keyword.name)}
                 disabled={isPending}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.05 }}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className={`rounded-lg px-4 py-2 text-[14px] font-medium transition-all ${
                   selectedKeyword === keyword.name
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                } disabled:opacity-50`}
+                    ? "bg-editorial-blue text-white shadow-md"
+                    : "bg-editorial-hover text-editorial-black hover:bg-editorial-divider"
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 {keyword.name}
-              </button>
+              </motion.button>
             ))}
           </div>
         )}
-      </div>
+      </motion.div>
 
       {/* 검색 결과 */}
-      {isPending && (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
-          <p className="text-gray-600">검색 중...</p>
-        </div>
-      )}
+      <AnimatePresence mode="wait">
+        {isPending && (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="rounded-2xl border border-editorial-divider bg-editorial-hover p-12 text-center"
+          >
+            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-editorial-divider border-t-editorial-blue"></div>
+            <p className="mt-4 font-mono text-[13px] text-editorial-gray">
+              Searching...
+            </p>
+          </motion.div>
+        )}
 
-      {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-          <p className="text-sm text-red-600">{error}</p>
-        </div>
-      )}
+        {error && (
+          <motion.div
+            key="error"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="rounded-2xl border border-red-200 bg-red-50 p-6"
+          >
+            <p className="text-[14px] text-red-600">{error}</p>
+          </motion.div>
+        )}
 
-      {!isPending && !error && searchResults.length === 0 && selectedKeyword && (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
-          <p className="text-gray-600">
-            &quot;{selectedKeyword}&quot;에 대한 검색 결과가 없습니다.
-          </p>
-        </div>
-      )}
+        {!isPending && !error && searchResults.length === 0 && selectedKeyword && (
+          <motion.div
+            key="empty"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="rounded-2xl border border-editorial-divider bg-editorial-hover p-12 text-center"
+          >
+            <p className="font-mono text-[13px] text-editorial-gray">
+              No results found for &quot;{selectedKeyword}&quot;
+            </p>
+          </motion.div>
+        )}
 
-      {!isPending && searchResults.length > 0 && (
-        <div>
-          <h3 className="mb-4 text-lg font-semibold text-gray-900">
-            &quot;{selectedKeyword}&quot; 검색 결과 ({searchResults.length}개)
-          </h3>
-          <div className="grid gap-6 md:grid-cols-2">
-            {searchResults.map((news, index) => (
-              <NewsCard key={news.link} news={news} index={index} />
-            ))}
-          </div>
-        </div>
-      )}
+        {!isPending && searchResults.length > 0 && (
+          <motion.div
+            key="results"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+          >
+            <div className="mb-6 flex items-baseline gap-3">
+              <h3 className="text-[20px] font-semibold text-editorial-black">
+                &quot;{selectedKeyword}&quot;
+              </h3>
+              <span className="font-mono text-[13px] text-editorial-gray">
+                {searchResults.length} results
+              </span>
+            </div>
+            <div className="grid gap-6 md:grid-cols-2">
+              {searchResults.map((news, index) => (
+                <NewsCard key={news.link} news={news} index={index} />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
