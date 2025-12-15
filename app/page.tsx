@@ -1,18 +1,25 @@
 import type { NewsItem } from "@/types/news";
-import { NewsList } from "@/features/news/NewsList";
+import { TabNavigation } from "@/features/news/TabNavigation";
+import { getKeywordsAction } from "@/app/actions/keywords";
 
 /**
  * AIDEV-NOTE: 메인 페이지 - Server Component
- * - ARCHITECTURE.md 7.3: page.tsx는 API Route만 fetch
- * - DB 저장 없이 즉시 렌더링
+ * - ARCHITECTURE.md 7.3: page.tsx는 데이터 오케스트레이션(병렬 fetch)만 담당
+ * - TabNavigation으로 TOP10 뉴스와 키워드 검색 탭 전환
  */
 export default async function Home() {
-  // AIDEV-NOTE: /api/top에서 매일경제 RSS 메인 TOP 10 뉴스 가져오기
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/top`, {
-    cache: "no-store", // SSR 시 매번 최신 데이터 fetch
-  });
+  // AIDEV-NOTE: 병렬 fetch - TOP 10 뉴스와 키워드 동시 조회
+  const [newsRes, keywords] = await Promise.all([
+    fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/top`,
+      {
+        cache: "no-store",
+      }
+    ),
+    getKeywordsAction(),
+  ]);
 
-  const newsList: NewsItem[] = res.ok ? await res.json() : [];
+  const newsList: NewsItem[] = newsRes.ok ? await newsRes.json() : [];
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -20,12 +27,12 @@ export default async function Home() {
         {/* Header */}
         <header className="mb-12 text-center">
           <h1 className="mb-2 text-4xl font-bold text-gray-900">Key News</h1>
-          <p className="text-gray-600">TOP 10 뉴스</p>
+          <p className="text-gray-600">TOP 10 뉴스 & 키워드 검색</p>
         </header>
 
-        {/* News List */}
+        {/* Tab Navigation */}
         <main className="mx-auto max-w-6xl">
-          <NewsList newsList={newsList} />
+          <TabNavigation topNewsList={newsList} keywords={keywords} />
         </main>
       </div>
     </div>
